@@ -1,0 +1,12 @@
+<h1>Edit Game</h1>
+
+<form action="/edit/<%= game.id %>" method="POST">
+  <input type="date" name="game_date" value="<%= game.game_date.toISOString().split('T')[0] %>" required />
+  <input type="number" name="team1_id" value="<%= game.team1_id %>" required />
+  <input type="number" name="team2_id" value="<%= game.team2_id %>" required />
+  <input type="number" name="score1" value="<%= game.score_team1 %>" required />
+  <input type="number" name="score2" value="<%= game.score_team2 %>" required />
+  <button type="submit">Save</button>
+</form>
+
+<a href="/">← Back</a>

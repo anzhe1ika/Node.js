@@ -1,0 +1,34 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Games</title>
+</head>
+<body>
+  <h1>Games List</h1>
+
+  <form action="/add" method="POST">
+    <input name="game_date" type="date" required />
+    <input name="team1_id" type="number" placeholder="Team 1 ID" required />
+    <input name="team2_id" type="number" placeholder="Team 2 ID" required />
+    <input name="score1" type="number" placeholder="Score 1" required />
+    <input name="score2" type="number" placeholder="Score 2" required />
+    <button type="submit">Add Game</button>
+  </form>
+
+  <ul>
+    <% games.forEach(g => { %>
+      <li>
+        <%= g.game_date.toISOString().split('T')[0] %>: 
+        <%= g.team1 %> (<%= g.score_team1 %>) vs <%= g.team2 %> (<%= g.score_team2 %>) 
+        <form action="/delete/<%= g.id %>" method="POST" style="display:inline;">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>
