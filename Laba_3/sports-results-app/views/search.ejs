@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Пошук гри</title>
+</head>
+<body>
+  <h1>Пошук за назвою команди</h1>
+  <form method="POST" action="/search">
+    <input name="query" placeholder="Введіть назву команди" required>
+    <button type="submit">Шукати</button>
+  </form>
+  <ul>
+    <% if (results.length === 0) { %>
+      <li>Нічого не знайдено</li>
+    <% } else { %>
+      <% results.forEach(game => { %>
+        <li>
+          <%= game.teamA %> vs <%= game.teamB %> |
+          <%= game.date %> |
+          Результат: <%= game.result %>
+        </li>
+      <% }) %>
+    <% } %>
+  </ul>
+  <a href="/">⬅ Назад</a>
+</body>
+</html>

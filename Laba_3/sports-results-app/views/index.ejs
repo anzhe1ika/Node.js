@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Розклад змагань</title>
+</head>
+<body>
+  <h1>Розклад та результати ігор</h1>
+  <a href="/admin">+ Додати гру</a>
+  <a href="/search">🔍 Пошук гри</a>
+  <ul>
+    <% if (games.length === 0) { %>
+      <li>Наразі немає збережених ігор.</li>
+    <% } else { %>
+      <% games.forEach(game => { %>
+        <li>
+          <strong><%= game.teamA %></strong> vs <strong><%= game.teamB %></strong> |
+          <%= game.date %> |
+          Результат: <%= game.result %>
+          <form method="POST" action="/delete/<%= game.id %>" style="display:inline">
+            <button type="submit">❌ Видалити</button>
+          </form>
+        </li>
+      <% }); %>
+    <% } %>
+  </ul>
+</body>
+</html>

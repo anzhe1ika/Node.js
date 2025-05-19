@@ -1,0 +1,30 @@
+[
+  {
+    "teamA": "dd",
+    "teamB": "dd",
+    "date": "2025-05-03",
+    "result": "-11",
+    "id": "264e17a4-22ea-4cfe-a6a3-3aa7b60cebb5"
+  },
+  {
+    "teamA": "dd",
+    "teamB": "gg",
+    "date": "2025-05-02",
+    "result": "jj",
+    "id": "06f7c6a5-a972-4fd8-ac01-73b7ac641c92"
+  },
+  {
+    "teamA": "rr",
+    "teamB": "tt",
+    "date": "2025-05-09",
+    "result": "yy",
+    "id": "c6d58c7e-efa1-4cb8-9761-04458730460a"
+  },
+  {
+    "teamA": "aa",
+    "teamB": "bb",
+    "date": "2025-05-17",
+    "result": "1:1",
+    "id": "f5ce5077-9443-468b-84bc-cd82c7044905"
+  }
+]
