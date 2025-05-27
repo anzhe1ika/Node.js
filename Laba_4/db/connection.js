@@ -1,13 +1,10 @@
-
-
-
 const sql = require('mssql');
 
 const config = {
-  server: 'localhost',
+  server: 'DESKTOP-63T21CU',
   database: 'SportsDB',
-  user: 'lab4user',
-  password: '12345',
+  user: 'sa',
+  password: '123456789',
   options: {
     trustServerCertificate: true
   }
