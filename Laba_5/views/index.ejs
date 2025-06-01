@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Games Management</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .nav { background: #007bff; padding: 10px; margin-bottom: 20px; }
+    .nav a { color: white; text-decoration: none; margin-right: 15px; padding: 5px 10px; }
+    .nav a:hover { background: rgba(255,255,255,0.2); }
+    .form-section { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .game-item { padding: 10px; border-bottom: 1px solid #eee; }
+    .game-actions { display: inline-block; margin-left: 10px; }
+    button { margin: 2px; padding: 5px 10px; }
+    select, input { margin: 2px; padding: 5px; }
+    .delete-btn { background: #dc3545; color: white; }
+    .edit-btn { background: #007bff; color: white; }
+    .add-btn { background: #28a745; color: white; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="/">Games</a>
+    <a href="/teams">Teams</a>
+  </div>
+
+  <h1>Games Management System</h1>
+
+  <!-- Форма додавання нової гри -->
+  <div class="form-section">
+    <h2>Add New Game</h2>
+    <form action="/add" method="POST">
+      <input name="game_date" type="date" required />
+      
+      <select name="team1_id" required>
+        <option value="">Select Team 1</option>
+        <% teams.forEach(team => { %>
+          <option value="<%= team.id %>"><%= team.name %></option>
+        <% }) %>
+      </select>
+      
+      <select name="team2_id" required>
+        <option value="">Select Team 2</option>
+        <% teams.forEach(team => { %>
+          <option value="<%= team.id %>"><%= team.name %></option>
+        <% }) %>
+      </select>
+      
+      <input name="score1" type="number" placeholder="Team 1 Score" min="0" required />
+      <input name="score2" type="number" placeholder="Team 2 Score" min="0" required />
+      <button type="submit" class="add-btn">Add Game</button>
+    </form>
+  </div>
+
+  <!-- Список ігор -->
+  <div class="form-section">
+    <h2>Games List (<%= games.length %> games)</h2>
+    <% if (games.length === 0) { %>
+      <p>No games found. Add some games above!</p>
+    <% } else { %>
+      <% games.forEach(game => { %>
+        <div class="game-item">
+          <strong><%= new Date(game.game_date).toLocaleDateString() %></strong>: 
+          <%= game.team1.name %> 
+          <strong><%= game.score_team1 %></strong> - <strong><%= game.score_team2 %></strong> 
+          <%= game.team2.name %>
+          
+          <div class="game-actions">
+            <a href="/edit/<%= game.id %>">
+              <button class="edit-btn">Edit</button>
+            </a>
+            <form action="/delete/<%= game.id %>" method="POST" style="display:inline;" 
+                  onsubmit="return confirm('Are you sure you want to delete this game?')">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+  <!-- Форма створення турніру (бізнес-операція) -->
+  <div class="form-section">
+    <h2>Create Tournament</h2>
+    <form id="tournamentForm">
+      <input type="text" id="tournamentName" placeholder="Tournament Name" required />
+      <div id="gamesContainer">
+        <h3>Tournament Games:</h3>
+        <div class="tournament-game">
+          <input type="date" name="game_date" required />
+          <select name="team1_id" required>
+            <option value="">Team 1</option>
+            <% teams.forEach(team => { %>
+              <option value="<%= team.id %>"><%= team.name %></option>
+            <% }) %>
+          </select>
+          <select name="team2_id" required>
+            <option value="">Team 2</option>
+            <% teams.forEach(team => { %>
+              <option value="<%= team.id %>"><%= team.name %></option>
+            <% }) %>
+          </select>
+          <input type="number" name="score1" placeholder="Score 1" min="0" value="0" />
+          <input type="number" name="score2" placeholder="Score 2" min="0" value="0" />
+        </div>
+      </div>
+      <button type="button" onclick="addTournamentGame()">Add Another Game</button>
+      <button type="submit" class="add-btn">Create Tournament</button>
+    </form>
+    <div id="tournamentResult"></div>
+  </div>
+
+  <script>
+    function addTournamentGame() {
+      const container = document.getElementById('gamesContainer');
+      const gameDiv = document.createElement('div');
+      gameDiv.className = 'tournament-game';
+      gameDiv.innerHTML = `
+        <input type="date" name="game_date" required />
+        <select name="team1_id" required>
+          <option value="">Team 1</option>
+          <% teams.forEach(team => { %>
+            <option value="<%= team.id %>"><%= team.name %></option>
+          <% }) %>
+        </select>
+        <select name="team2_id" required>
+          <option value="">Team 2</option>
+          <% teams.forEach(team => { %>
+            <option value="<%= team.id %>"><%= team.name %></option>
+          <% }) %>
+        </select>
+        <input type="number" name="score1" placeholder="Score 1" min="0" value="0" />
+        <input type="number" name="score2" placeholder="Score 2" min="0" value="0" />
+        <button type="button" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      container.appendChild(gameDiv);
+    }
+
+    document.getElementById('tournamentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const tournamentName = document.getElementById('tournamentName').value;
+      const gameElements = document.querySelectorAll('.tournament-game');
+      const games = [];
+      
+      gameElements.forEach(gameEl => {
+        const inputs = gameEl.querySelectorAll('input, select');
+        games.push({
+          game_date: inputs[0].value,
+          team1_id: inputs[1].value,
+          team2_id: inputs[2].value,
+          score1: inputs[3].value || 0,
+          score2: inputs[4].value || 0
+        });
+      });
+
+      try {
+        const response = await fetch('/tournament', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tournament_name: tournamentName, games })
+        });
+        
+        const result = await response.json();
+        const resultDiv = document.getElementById('tournamentResult');
+        
+        if (result.success) {
+          resultDiv.innerHTML = `<p style="color: green;">${result.message}</p>`;
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          resultDiv.innerHTML = `<p style="color: red;">${result.message}</p>`;
+        }
+      } catch (error) {
+        document.getElementById('tournamentResult').innerHTML = 
+          `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
