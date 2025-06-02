@@ -162,9 +162,9 @@ async function deleteGame(req, res) {
 
 // Створення турніру з декількома іграми
 async function createTournament(req, res) {
-  const { tournament_name, games } = req.body;
+  const { tournament_name, games } = req.body; // games - масив об'єктів ігор
   const transaction = await sequelize.transaction();
-  
+
   try {
     // Перевіряємо, що всі команди існують
     const teamIds = [...new Set(games.flatMap(g => [g.team1_id, g.team2_id]))];
@@ -172,9 +172,23 @@ async function createTournament(req, res) {
       where: { id: teamIds },
       transaction
     });
-    
+
     if (teams.length !== teamIds.length) {
       throw new Error('Some teams do not exist');
+    }
+
+    // Перевіряємо, що немає ігор з однаковими командами
+    for (const game of games) {
+      const team1Id = parseInt(game.team1_id);
+      const team2Id = parseInt(game.team2_id);
+
+      if (isNaN(team1Id) || isNaN(team2Id)) {
+        throw new Error('Invalid team ID');
+      }
+
+      if (team1Id === team2Id) {
+        throw new Error(`Game on ${game.game_date} has identical teams (ID: ${team1Id})`);
+      }
     }
 
     // Перевіряємо, що немає дублікатів ігор в один день між тими ж командами
@@ -182,10 +196,10 @@ async function createTournament(req, res) {
       for (let j = i + 1; j < games.length; j++) {
         const game1 = games[i];
         const game2 = games[j];
-        
+
         if (game1.game_date === game2.game_date &&
-            ((game1.team1_id === game2.team1_id && game1.team2_id === game2.team2_id) ||
-             (game1.team1_id === game2.team2_id && game1.team2_id === game2.team1_id))) {
+          ((game1.team1_id === game2.team1_id && game1.team2_id === game2.team2_id) ||
+            (game1.team1_id === game2.team2_id && game1.team2_id === game2.team1_id))) {
           throw new Error('Duplicate games found in tournament');
         }
       }
@@ -201,13 +215,13 @@ async function createTournament(req, res) {
         score_team1: parseInt(gameData.score1) || 0,
         score_team2: parseInt(gameData.score2) || 0
       }, { transaction });
-      
+
       createdGames.push(game);
     }
 
     // Підтверджуємо транзакцію - всі ігри створені успішно
     await transaction.commit();
-    
+
     res.json({
       success: true,
       message: `Tournament "${tournament_name}" created successfully`,
